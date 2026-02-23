@@ -16,7 +16,7 @@ The script will:
 - For Fish: Add missing functions, aliases, and environment variables
 - For Git: Use `git config` commands to merge settings
 - For gitignore: Merge ignore patterns without duplicates
-- For jj/WezTerm: Ask before replacing existing configs
+- For jj/WezTerm/Starship/GitHub CLI: Ask before replacing existing configs
 - Create backups of existing files (with `.backup.TIMESTAMP` extension)
 - Optionally install Fisher (Fish plugin manager)
 - Optionally install Fish plugins (bobthefish theme, fish-ssh-agent)
@@ -48,12 +48,20 @@ fisher install danhper/fish-ssh-agent
 - `bat` - better cat
 - `broot` - better tree
 - `dua` - disk usage analyzer
+- `eza` - modern ls replacement (with git integration and icons)
 - `fzf` - fuzzy finder
 - `prettyping` - better ping
 - `lazygit` - terminal UI for git
 - `direnv` - environment variable manager
 - `jj` (jujutsu) - version control system (optional)
 - `gh` - GitHub CLI
+
+**Eza Aliases** (enabled if eza is installed):
+- `ls` - basic listing with git status, icons, and directories first
+- `ll` / `l` - long format with all files, headers, and full details
+- `la` - same as ll but explicitly shows all files
+- `lt` - tree view (2 levels deep)
+- `lta` - tree view with all files (2 levels deep)
 
 ### `wezterm.lua`
 WezTerm terminal emulator configuration.
@@ -64,6 +72,45 @@ WezTerm terminal emulator configuration.
 mkdir -p ~/.config/wezterm
 cp wezterm.lua ~/.config/wezterm/wezterm.lua
 ```
+
+### `starship.toml`
+Starship prompt configuration with custom λ character.
+
+**Installation:**
+```bash
+# Copy to config directory
+cp starship.toml ~/.config/starship.toml
+```
+
+**Required tools:**
+- `starship` - cross-shell prompt
+
+**Features:**
+- Command timeout: 3000ms
+- Success symbol: `λ` (green)
+- Error symbol: `λ` (red)
+- Automatically enabled in Fish shell (via config.fish)
+
+### `gh-config.yml`
+GitHub CLI configuration.
+
+**Installation:**
+```bash
+# Copy to gh config directory
+mkdir -p ~/.config/gh
+cp gh-config.yml ~/.config/gh/config.yml
+```
+
+**Required tools:**
+- `gh` - GitHub CLI
+
+**Features:**
+- Editor: `nvim`
+- Git protocol: `ssh`
+- Interactive prompts: enabled
+- Aliases:
+  - `gh co` → `gh pr checkout`
+  - `gh pv` → `gh pr view`
 
 ### `gitconfig`
 Git configuration with aliases, diff/merge tools, and settings.
