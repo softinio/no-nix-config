@@ -1,16 +1,11 @@
-# GitHub CLI Configuration
-# Converted from nixpkgs configuration
-
 # What editor gh should run when creating issues, pull requests, etc.
 editor: nvim
-
 # What protocol to use when performing git operations
 git_protocol: ssh
-
 # When to interactively prompt
 prompt: enabled
-
 # Aliases allow you to create nicknames for gh commands
 aliases:
-  co: pr checkout
-  pv: pr view
+    co: pr checkout
+    pv: pr view
+version: "1"

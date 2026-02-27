@@ -18,6 +18,7 @@ set -xg TERM xterm-256color
 # PATH configuration
 set -xg PATH $HOME/bin $HOME/.local/bin $HOME/.cargo/bin $HOME/.npm-global/bin \
     $HOME/.luarocks/bin \
+    /opt/local/bin /opt/local/sbin \
     /usr/local/bin /usr/bin /bin /usr/sbin /sbin \
     /Applications/WezTerm.app/Contents/MacOS \
     $PATH
@@ -38,6 +39,12 @@ end
 
 if test -f ~/.anthropic
     set -xg ANTHROPIC_API_KEY (cat ~/.anthropic)
+
+end
+
+if test -f /Library/Developer/Toolchains/swift-6.2.3-RELEASE.xctoolchain/Info.plist
+    set -xg TOOLCHAINS (plutil -extract CFBundleIdentifier raw /Library/Developer/Toolchains/swift-6.2.3-RELEASE.xctoolchain/Info.plist)
+    set -xg PATH /Library/Developer/Toolchains/swift-6.2.3-RELEASE.xctoolchain/usr/bin $PATH
 end
 
 # ============================================================================
@@ -57,7 +64,7 @@ if status is-interactive
 
     # direnv integration
     if type -q direnv
-        eval (direnv hook fish)
+        direnv hook fish | source
     end
 end
 
@@ -108,4 +115,7 @@ end
 #    curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher
 #
 # Note: This config uses Starship prompt (not bobthefish theme)
-export PATH="$HOME/.local/bin:$PATH"
+
+# >>> coursier install directory >>>
+set -gx PATH "$PATH:/Users/salar/Library/Application Support/Coursier/bin"
+# <<< coursier install directory <<<

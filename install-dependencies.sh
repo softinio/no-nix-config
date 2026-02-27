@@ -222,7 +222,7 @@ install_scala_tools() {
 install_optional_tools() {
     print_header "Installing optional tools"
 
-    read -p "$(echo -e ${BLUE}Install optional tools (pandoc, imagemagick, ffmpeg, etc.)? [y/N]:${NC} )" -n 1 -r
+    read -p "$(echo -e "${BLUE}Install optional tools (pandoc, imagemagick, ffmpeg, etc.)? [y/N]:${NC} ")" -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         return 0

@@ -112,8 +112,6 @@ return {
           telemetry = { enable = false },
         },
       },
-      -- Documentation
-      marksman = {},
       -- Nix
       nil_ls = {},
       nixd = {},

@@ -149,7 +149,12 @@ else
   vim.keymap.set("n", "<leader>mb", "<cmd>lua require('metals').build_import()<CR>")
   vim.keymap.set("n", "<leader>ms", "<cmd>lua require('metals').super_method_hierarchy()<CR>")
   vim.keymap.set("n", "<leader>mn", "<cmd>lua require('metals').new_scala_file()<CR>")
-  vim.keymap.set("n", "<leader>mR", "<cmd>lua require('metals').build_restart()<CR>")
+  vim.keymap.set("n", "<leader>mR", function()
+    local clients = vim.lsp.get_clients({ name = "metals" })
+    if #clients > 0 then
+      clients[1].request("workspace/executeCommand", { command = "metals.build-restart" })
+    end
+  end)
   vim.keymap.set("n", "<leader>mC", "<cmd>lua require('metals').build_connect()<CR>")
   vim.keymap.set("n", "<leader>md", "<cmd>lua require('metals').open_all_diagnostics()<CR>")
 
