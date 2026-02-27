@@ -111,6 +111,12 @@ setup_gh() {
     make_link "$SCRIPT_DIR/dotfiles/gh-config.yml" "$HOME/.config/gh/config.yml"
 }
 
+# --- Claude Code ---
+setup_claude() {
+    print_header "Claude Code Settings"
+    make_link "$SCRIPT_DIR/dotfiles/claude-settings.json" "$HOME/.claude/settings.json"
+}
+
 # --- Fisher / Fish plugins ---
 check_fisher() {
     fish -c "type -q fisher" 2>/dev/null
@@ -170,6 +176,7 @@ main() {
     setup_wezterm
     setup_starship
     setup_gh
+    setup_claude
 
     read -p "$(echo -e "${BLUE}Set up Fish plugins? [y/N]:${NC} ")" -n 1 -r
     echo
