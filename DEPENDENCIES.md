@@ -24,9 +24,6 @@ These are **required** for LSP functionality in your Neovim configuration:
 - `yaml-language-server`
 - `jq-lsp` - JSON query LSP
 
-### Documentation
-- `marksman` - Markdown LSP
-
 ### Nix (only if you use Nix)
 - `nil` - Nix LSP
 - `nixd` - Nix LSP (alternative/complement to nil)

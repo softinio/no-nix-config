@@ -30,9 +30,7 @@ return {
     -- Setup lspkind
     lspkind.init({
       mode = "symbol_text",
-      symbol_map = {
-        Copilot = "",
-      },
+      symbol_map = {},
     })
 
     cmp.setup({
@@ -57,7 +55,6 @@ return {
       },
       sources = cmp.config.sources({
         { name = "nvim_lsp" },
-        { name = "copilot" },
         { name = "luasnip" },
         {
           name = "buffer",
@@ -78,7 +75,6 @@ return {
           ellipsis_char = "...",
           menu = {
             nvim_lsp = "[LSP]",
-            copilot = "[copilot]",
             luasnip = "[snip]",
             buffer = "[buffer]",
             path = "[path]",

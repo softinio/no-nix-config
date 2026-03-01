@@ -1,0 +1,10 @@
+# Starship Configuration
+# Converted from nixpkgs configuration
+
+# Timeout for commands to complete (in milliseconds)
+command_timeout = 3000
+
+# Character prompt configuration
+[character]
+success_symbol = " [λ](bold green)"
+error_symbol = " [λ](bold red)"

@@ -56,23 +56,29 @@ install_macports_packages() {
     print_header "Installing core packages via MacPorts"
 
     local packages=(
-        ripgrep
-        fd
-        fzf
         bat
-        tree-sitter
-        nodejs22
-        git-lfs
         difftastic
-        lazygit
-        gh
-        fish
         direnv
-        starship
         eza
-        tealdeer
+        fd
+        fish
+        fzf
+        gh
+        git-lfs
         jq
+        jujutsu
+        lazygit
+        nodejs22
+        npm11
+        postgresql18
+        ripgrep
+        ripgrep-all
+        starship
+        tealdeer
         tree
+        tree-sitter
+        uv
+        wezterm
     )
 
     for pkg in "${packages[@]}"; do
@@ -114,9 +120,9 @@ install_npm_packages() {
     done
 }
 
-# Install Python packages
-install_python_packages() {
-    print_header "Installing Python packages"
+# Install uv tools (globally available CLI tools managed by uv)
+install_uv_tools() {
+    print_header "Installing uv tools"
 
     # Check if uv is installed
     if ! command_exists uv; then
@@ -131,27 +137,19 @@ install_python_packages() {
         print_success "uv installed successfully"
     fi
 
-    # Check if Python 3.13 is available globally
-    if ! command_exists python3 && ! command_exists python; then
-        print_info "No global Python found. Installing Python 3.13 via uv..."
-        uv python install 3.13
-        print_success "Python 3.13 installed"
-    fi
-
-    # Install Python tools using uv
-    print_info "Using uv for Python package management..."
-    local packages=(basedpyright ruff black isort flake8)
+    # uv tool install manages its own Python internally — no global Python needed
+    # uv handles already-installed tools gracefully
+    local packages=(ruff ty)
 
     for pkg in "${packages[@]}"; do
-        if uv tool list | grep -q "$pkg"; then
-            print_success "$pkg already installed"
-        else
-            print_info "Installing $pkg..."
-            uv tool install "$pkg"
-        fi
+        print_info "Installing $pkg..."
+        uv tool install "$pkg"
     done
 
-    print_success "Python packages installed via uv"
+    # Ensure uv's tool bin directory is on PATH
+    uv tool update-shell
+
+    print_success "uv tools installed"
 }
 
 # Install Rust and cargo packages
@@ -174,7 +172,6 @@ install_cargo_packages() {
 
     local packages=(
         stylua
-        broot
         dua-cli
         jj-cli
     )
@@ -206,28 +203,18 @@ install_scala_tools() {
         print_info "Installing $tool..."
         cs install "$tool" --yes
     done
-}
 
-# Install Lua Language Server
-install_lua_lsp() {
-    print_header "Installing Lua Language Server"
-
-    if command_exists lua-language-server; then
-        print_success "lua-language-server already installed"
-        return 0
-    fi
-
-    # Try MacPorts first
-    if port search lua-language-server 2>/dev/null | grep -q lua-language-server; then
-        print_info "Installing lua-language-server via MacPorts..."
-        sudo port install lua-language-server
+    # Install mill globally (not available via Coursier)
+    if command_exists mill; then
+        print_success "mill already installed"
     else
-        print_info "Installing lua-language-server via cargo..."
-        if command_exists cargo; then
-            cargo install lua-language-server
-        else
-            print_warning "lua-language-server not available. Install manually from: https://github.com/LuaLS/lua-language-server"
-        fi
+        print_info "Installing mill globally..."
+        local mill_version="1.1.2"
+        sudo curl -L \
+            "https://repo1.maven.org/maven2/com/lihaoyi/mill-dist/${mill_version}/mill-dist-${mill_version}-mill.sh" \
+            -o /usr/local/bin/mill
+        sudo chmod +x /usr/local/bin/mill
+        print_success "mill installed"
     fi
 }
 
@@ -235,7 +222,7 @@ install_lua_lsp() {
 install_optional_tools() {
     print_header "Installing optional tools"
 
-    read -p "$(echo -e ${BLUE}Install optional tools (pandoc, imagemagick, ffmpeg, etc.)? [y/N]:${NC} )" -n 1 -r
+    read -p "$(echo -e "${BLUE}Install optional tools (pandoc, imagemagick, ffmpeg, etc.)? [y/N]:${NC} ")" -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         return 0
@@ -273,8 +260,7 @@ install_minimal() {
     check_macports
     install_macports_packages
     install_npm_packages
-    install_python_packages
-    install_lua_lsp
+    install_uv_tools
 }
 
 # Full installation
@@ -318,14 +304,7 @@ install_custom() {
     read -p "$(echo -e ${BLUE}Install Python packages? [y/N]:${NC} )" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        install_python_packages
-    fi
-
-    # Lua LSP
-    read -p "$(echo -e ${BLUE}Install Lua Language Server? [y/N]:${NC} )" -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        install_lua_lsp
+        install_uv_tools
     fi
 
     # Cargo packages

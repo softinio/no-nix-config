@@ -155,7 +155,7 @@ dotfiles/
 
 **Fish Config (`config.fish`)**:
 - NO Nix-related content (no nixc, nixre, nixgc aliases, no nix paths)
-- Functions: gitignore, ot (ollama terminal command)
+- Functions: gitignore
 - Aliases use: bat, broot, dua, fzf, lazygit, gh
 - API keys loaded from `~/.openai` and `~/.anthropic`
 

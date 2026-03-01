@@ -41,9 +41,6 @@ return {
       mcpClient = "claude",
       startMcpServer = true,
 
-      -- Server version
-      serverVersion = "latest.snapshot",
-
       -- Display options
       showImplicitArguments = true,
       showImplicitConversionsAndClasses = true,
@@ -58,8 +55,17 @@ return {
 
     metals_config.on_attach = function(client, bufnr)
       -- Metals keybindings are now set in init.lua
-      vim.cmd([[autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()]])
-      vim.cmd([[autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()]])
+      local group = vim.api.nvim_create_augroup("metals-highlight-" .. bufnr, { clear = true })
+      vim.api.nvim_create_autocmd("CursorHold", {
+        buffer = bufnr,
+        group = group,
+        callback = vim.lsp.buf.document_highlight,
+      })
+      vim.api.nvim_create_autocmd("CursorMoved", {
+        buffer = bufnr,
+        group = group,
+        callback = vim.lsp.buf.clear_references,
+      })
     end
 
     metals_config.init_options = {
