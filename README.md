@@ -1,6 +1,6 @@
-# nvim-config
+# no-nix-config
 
-[Salar Rahmanian](https://www.softinio.com)'s [neovim](https://neovim.io/) Configuration
+[Salar Rahmanian](https://www.softinio.com)'s dotfiles and neovim config for when I am not using nix
 
 ## Quick Links
 
