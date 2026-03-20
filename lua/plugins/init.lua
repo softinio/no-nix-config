@@ -39,7 +39,7 @@ return {
       require("nvim-autopairs").setup()
     end,
   },
-  "nvim-tree/nvim-web-devicons",
+  { "nvim-tree/nvim-web-devicons", config = function() require("nvim-web-devicons").setup() end },
   -- Removed: stylua-nvim, nvim-jqx, scaladex.nvim, mkdx (not in nixvim)
   {
     "lukas-reineke/indent-blankline.nvim",

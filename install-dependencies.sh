@@ -56,6 +56,7 @@ install_macports_packages() {
     print_header "Installing core packages via MacPorts"
 
     local packages=(
+        alacritty
         bat
         difftastic
         direnv
@@ -75,6 +76,7 @@ install_macports_packages() {
         ripgrep-all
         starship
         tealdeer
+        tmux
         tree
         tree-sitter
         uv
@@ -174,6 +176,7 @@ install_cargo_packages() {
         stylua
         dua-cli
         jj-cli
+        tmux-sessionizer
     )
 
     for pkg in "${packages[@]}"; do
