@@ -117,6 +117,31 @@ setup_claude() {
     make_link "$SCRIPT_DIR/dotfiles/claude-settings.json" "$HOME/.claude/settings.json"
 }
 
+# --- Alacritty ---
+setup_alacritty() {
+    print_header "Alacritty Configuration"
+    make_link "$SCRIPT_DIR/dotfiles/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml"
+}
+
+# --- Tmux ---
+setup_tmux() {
+    print_header "Tmux Configuration"
+    make_link "$SCRIPT_DIR/dotfiles/tmux.conf" "$HOME/.config/tmux/tmux.conf"
+    if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+        print_info "Installing TPM (Tmux Plugin Manager)..."
+        git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+        print_success "TPM installed — run C-a I inside tmux to install plugins"
+    else
+        print_success "TPM already installed"
+    fi
+}
+
+# --- tmux-sessionizer (tms) ---
+setup_tms() {
+    print_header "tmux-sessionizer (tms) Configuration"
+    make_link "$SCRIPT_DIR/dotfiles/tms-config.toml" "$HOME/.config/tms/config.toml"
+}
+
 # --- Fisher / Fish plugins ---
 check_fisher() {
     fish -c "type -q fisher" 2>/dev/null
@@ -177,6 +202,15 @@ main() {
     setup_starship
     setup_gh
     setup_claude
+    setup_alacritty
+    setup_tmux
+    setup_tms
+
+    read -p "$(echo -e "${BLUE}Configure PostgreSQL & Redis services? [y/N]:${NC} ")" -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        bash "$SCRIPT_DIR/install-dependencies.sh" --databases-only
+    fi
 
     read -p "$(echo -e "${BLUE}Set up Fish plugins? [y/N]:${NC} ")" -n 1 -r
     echo

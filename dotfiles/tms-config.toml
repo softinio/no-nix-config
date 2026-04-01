@@ -1,0 +1,2 @@
+search_paths = ["~/Projects", "~/OpenSource"]
+max_depths = [1, 1]

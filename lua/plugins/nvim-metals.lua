@@ -68,6 +68,8 @@ return {
       })
     end
 
+    metals_config.server_properties = { "-Xmx4G" }
+
     metals_config.init_options = {
       statusBarProvider = "on",
       compilerOptions = {

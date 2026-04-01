@@ -32,6 +32,13 @@ set -xg FZF_DEFAULT_OPTS "--preview='bat {} --color=always'"
 # Ripgrep
 set -xg USE_BUILTIN_RIPGREP 0
 
+# PostgreSQL (MacPorts postgresql18)
+if test -d /opt/local/lib/postgresql18/bin
+    set -xg PATH /opt/local/lib/postgresql18/bin $PATH
+    set -xg PGDATA /opt/local/var/db/postgresql18/defaultdb
+    set -xg PGHOST localhost
+end
+
 # API Keys (if files exist)
 if test -f ~/.openai
     set -xg OPENAI_API_KEY (cat ~/.openai)
