@@ -206,6 +206,12 @@ main() {
     setup_tmux
     setup_tms
 
+    read -p "$(echo -e "${BLUE}Configure PostgreSQL & Redis services? [y/N]:${NC} ")" -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        bash "$SCRIPT_DIR/install-dependencies.sh" --databases-only
+    fi
+
     read -p "$(echo -e "${BLUE}Set up Fish plugins? [y/N]:${NC} ")" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then

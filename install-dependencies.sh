@@ -72,6 +72,8 @@ install_macports_packages() {
         nodejs22
         npm11
         postgresql18
+        postgresql18-server
+        redis
         ripgrep
         ripgrep-all
         starship
@@ -221,6 +223,54 @@ install_scala_tools() {
     fi
 }
 
+# Install, initialize, and start PostgreSQL and Redis via MacPorts
+setup_databases() {
+    print_header "Installing & Configuring PostgreSQL & Redis"
+
+    check_macports
+
+    # --- PostgreSQL ---
+    for pkg in postgresql18 postgresql18-server; do
+        if port installed "$pkg" 2>/dev/null | grep -q "$pkg"; then
+            print_success "$pkg already installed"
+        else
+            print_info "Installing $pkg..."
+            sudo port install "$pkg"
+        fi
+    done
+
+    local pgdata="/opt/local/var/db/postgresql18/defaultdb"
+    if [ ! -d "$pgdata" ]; then
+        print_info "Initializing PostgreSQL data directory at $pgdata ..."
+        sudo mkdir -p "$pgdata"
+        sudo chown postgres:postgres "$pgdata"
+        sudo -u postgres /opt/local/lib/postgresql18/bin/initdb -D "$pgdata" --encoding=UTF8 --locale=en_US.UTF-8
+        print_success "PostgreSQL data directory initialized"
+    else
+        print_success "PostgreSQL data directory already exists: $pgdata"
+    fi
+
+    print_info "Loading PostgreSQL launchd service (starts at login)..."
+    sudo port load postgresql18-server
+    print_success "PostgreSQL service loaded"
+
+    # --- Redis ---
+    if port installed redis 2>/dev/null | grep -q "redis"; then
+        print_success "redis already installed"
+    else
+        print_info "Installing redis..."
+        sudo port install redis
+    fi
+
+    print_info "Loading Redis launchd service (starts at login)..."
+    sudo port load redis
+    print_success "Redis service loaded"
+
+    print_info "Connection details:"
+    echo "  PostgreSQL: host=localhost port=5432  (psql -U postgres)"
+    echo "  Redis:      host=localhost port=6379  (redis-cli)"
+}
+
 # Install additional optional tools
 install_optional_tools() {
     print_header "Installing optional tools"
@@ -252,7 +302,8 @@ show_menu() {
     echo "  2) Full (Everything except Scala)"
     echo "  3) Full + Scala (Complete setup)"
     echo "  4) Custom (Choose what to install)"
-    echo "  5) Exit"
+    echo "  5) Configure databases (PostgreSQL + Redis launchd)"
+    echo "  6) Exit"
     echo ""
 }
 
@@ -273,6 +324,12 @@ install_full() {
     install_minimal
     install_cargo_packages
     install_optional_tools
+
+    read -p "$(echo -e "${BLUE}Configure PostgreSQL & Redis services? [y/N]:${NC} ")" -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        setup_databases
+    fi
 }
 
 # Full + Scala
@@ -326,13 +383,20 @@ install_custom() {
 
     # Optional tools
     install_optional_tools
+
+    # Database services
+    read -p "$(echo -e "${BLUE}Configure PostgreSQL & Redis services? [y/N]:${NC} ")" -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        setup_databases
+    fi
 }
 
 # Main execution
 main() {
     while true; do
         show_menu
-        read -p "Enter choice [1-5]: " choice
+        read -p "Enter choice [1-6]: " choice
 
         case $choice in
             1)
@@ -352,11 +416,15 @@ main() {
                 break
                 ;;
             5)
+                setup_databases
+                break
+                ;;
+            6)
                 print_info "Exiting..."
                 exit 0
                 ;;
             *)
-                print_error "Invalid option. Please choose 1-5."
+                print_error "Invalid option. Please choose 1-6."
                 ;;
         esac
     done
@@ -380,4 +448,8 @@ main() {
 }
 
 # Run main function
-main
+if [[ "${1:-}" == "--databases-only" ]]; then
+    setup_databases
+else
+    main
+fi
