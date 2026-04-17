@@ -271,6 +271,62 @@ setup_databases() {
     echo "  Redis:      host=localhost port=6379  (redis-cli)"
 }
 
+# Install pyenv (Python version manager)
+install_pyenv() {
+    print_header "pyenv (Python Version Manager)"
+
+    if command_exists pyenv || [ -d "$HOME/.pyenv" ]; then
+        print_success "pyenv is already installed"
+        return
+    fi
+
+    read -p "$(echo -e "${BLUE}Install pyenv? [y/N]:${NC} ")" -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        print_info "Skipping pyenv installation"
+        return
+    fi
+
+    print_info "Installing pyenv via pyenv.run..."
+    curl https://pyenv.run | bash
+    print_success "pyenv installed — restart your terminal for changes to take effect"
+}
+
+# Install Poetry (Python packaging tool)
+install_poetry() {
+    print_header "Poetry (Python Packaging & Dependency Manager)"
+
+    if command_exists poetry; then
+        print_success "poetry is already installed"
+        return
+    fi
+
+    # pyenv is a prerequisite
+    if ! command_exists pyenv && [ ! -d "$HOME/.pyenv" ]; then
+        print_error "pyenv is required before installing Poetry."
+        print_info "Run this script and choose option 6 to install pyenv first,"
+        print_info "then restart your terminal so pyenv is on PATH."
+        return 1
+    fi
+
+    if ! command_exists python3; then
+        print_error "python3 is not on PATH. Make sure pyenv is initialised and a Python version is set (pyenv global <version>)."
+        return 1
+    fi
+
+    read -p "$(echo -e "${BLUE}Install Poetry? [y/N]:${NC} ")" -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        print_info "Skipping Poetry installation"
+        return
+    fi
+
+    print_info "Installing Poetry via official installer..."
+    curl -sSL https://install.python-poetry.org | python3 -
+    print_success "Poetry installed — restart your terminal or add \$HOME/.local/bin to PATH"
+    print_info "Verify with: poetry --version"
+}
+
 # Install additional optional tools
 install_optional_tools() {
     print_header "Installing optional tools"
@@ -303,7 +359,9 @@ show_menu() {
     echo "  3) Full + Scala (Complete setup)"
     echo "  4) Custom (Choose what to install)"
     echo "  5) Configure databases (PostgreSQL + Redis launchd)"
-    echo "  6) Exit"
+    echo "  6) Install pyenv (Python version manager)"
+    echo "  7) Install Poetry (requires pyenv)"
+    echo "  8) Exit"
     echo ""
 }
 
@@ -315,6 +373,7 @@ install_minimal() {
     install_macports_packages
     install_npm_packages
     install_uv_tools
+    install_pyenv
 }
 
 # Full installation
@@ -381,6 +440,12 @@ install_custom() {
         install_scala_tools
     fi
 
+    # pyenv
+    install_pyenv
+
+    # Poetry
+    install_poetry
+
     # Optional tools
     install_optional_tools
 
@@ -396,7 +461,7 @@ install_custom() {
 main() {
     while true; do
         show_menu
-        read -p "Enter choice [1-6]: " choice
+        read -p "Enter choice [1-8]: " choice
 
         case $choice in
             1)
@@ -420,11 +485,19 @@ main() {
                 break
                 ;;
             6)
+                install_pyenv
+                break
+                ;;
+            7)
+                install_poetry
+                break
+                ;;
+            8)
                 print_info "Exiting..."
                 exit 0
                 ;;
             *)
-                print_error "Invalid option. Please choose 1-6."
+                print_error "Invalid option. Please choose 1-8."
                 ;;
         esac
     done
