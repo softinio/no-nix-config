@@ -54,6 +54,19 @@ if test -f /Library/Developer/Toolchains/swift-6.2.3-RELEASE.xctoolchain/Info.pl
     set -xg PATH /Library/Developer/Toolchains/swift-6.2.3-RELEASE.xctoolchain/usr/bin $PATH
 end
 
+# Xcode SDK
+if type -q xcrun
+    set -gx SDKROOT (xcrun --show-sdk-path)
+end
+
+# pyenv
+if test -d $HOME/.pyenv
+    set -xg PYENV_ROOT $HOME/.pyenv
+    if test -d $PYENV_ROOT/bin
+        set -xg PATH $PYENV_ROOT/bin $PATH
+    end
+end
+
 # ============================================================================
 # Interactive Shell Initialization
 # ============================================================================
@@ -72,6 +85,12 @@ if status is-interactive
     # direnv integration
     if type -q direnv
         direnv hook fish | source
+    end
+
+    # pyenv init
+    if type -q pyenv
+        pyenv init - fish | source
+        pyenv virtualenv-init - | source
     end
 end
 

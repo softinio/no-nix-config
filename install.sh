@@ -212,6 +212,18 @@ main() {
         bash "$SCRIPT_DIR/install-dependencies.sh" --databases-only
     fi
 
+    read -p "$(echo -e "${BLUE}Install pyenv (Python version manager)? [y/N]:${NC} ")" -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        if command -v pyenv &> /dev/null || [ -d "$HOME/.pyenv" ]; then
+            print_success "pyenv is already installed"
+        else
+            print_info "Installing pyenv via pyenv.run..."
+            curl https://pyenv.run | bash
+            print_success "pyenv installed — restart your terminal for changes to take effect"
+        fi
+    fi
+
     read -p "$(echo -e "${BLUE}Set up Fish plugins? [y/N]:${NC} ")" -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
